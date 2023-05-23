@@ -30,6 +30,18 @@ mod tests {
         assert_eq!(found_path.is_some(), true);
     }
 
+    #[test]
+    fn err_if_dir_exists() {
+        let tmp = temp_dir();
+
+        create_dir(format!("{}/{}", tmp, ".rit")).unwrap();
+
+        let result = init(&tmp);
+
+        assert_eq!(result.is_err(), true);
+        assert_eq!(result.unwrap_err().kind(), io::ErrorKind::AlreadyExists);
+    }
+
     fn temp_dir() -> String {
         let num = rand::thread_rng().gen_range(0..100000);
         let path = format!("/tmp/{}", num);
