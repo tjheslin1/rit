@@ -1,11 +1,18 @@
 use std::fs::create_dir;
+use std::env::current_dir;
 use std::io;
 
-pub fn init(path: &str) -> io::Result<()> {
+pub fn init() -> io::Result<String> {
+	let binding = current_dir().unwrap();
+	let dir = binding.to_str().unwrap();
+	create(&dir)?;
+	Ok(format!("{}/.rit", dir))
+}
+
+fn create(path: &str) -> io::Result<()> {
     println!("Init: {}", path);
 
-    create_dir(format!("{}/{}", path, ".rit"))?;
-    Ok(())
+    create_dir(format!("{}/{}", path, ".rit"))
 }
 
 #[cfg(test)]
@@ -16,10 +23,10 @@ mod tests {
     use std::fs::read_dir;
 
     #[test]
-    fn init_creates_dir() {
+    fn create_creates_dir() {
         let tmp = temp_dir();
 
-        init(&tmp).unwrap();
+        create(&tmp).unwrap();
 
         let mut ls = read_dir(&tmp).unwrap();
 
